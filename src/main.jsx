@@ -4,11 +4,12 @@ import App from "./App.jsx";
 import "./index.css";
 import Navbar from "./components/Navbar.jsx";
 import Bisection from "./Bisection.jsx";
+import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  <BrowserRouter>
     <Navbar />
     {/* <App /> */}
     <Bisection />
-  </StrictMode>
+  </BrowserRouter>
 );

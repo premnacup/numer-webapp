@@ -20,7 +20,7 @@ function Bisection() {
     do {
       xm = (xl + xr) / 2;
       fxm = evaluate(Equation, { x: xm });
-      currentError = Math.abs(fxm);
+      currentError = Math.abs(xr - xl);
       newData.push({
         iteration: iter,
         Xl: xl,
@@ -43,14 +43,19 @@ function Bisection() {
   };
 
   const calculateRoot = () => {
-    if (evaluate(Equation, { x: xl }) > 0) {
-      alert("No possible answer in the given range.");
-      return;
-    }
     if (xl >= xr) {
       alert("XL must be less than XR.");
       return;
     }
+
+    const fxl = evaluate(Equation, { x: xl });
+    const fxr = evaluate(Equation, { x: xr });
+
+    if (fxl * fxr >= 0 && xl >= 0 && xr >= 0) {
+      alert("Can't find root. Please adjust XL and XR.");
+      return;
+    }
+
     try {
       CalculateBisection(xl, xr);
       setShowTable(true);

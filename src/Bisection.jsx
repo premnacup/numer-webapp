@@ -174,6 +174,9 @@ function Bisection() {
         </button>
         {answer}
       </div>
+      {/* <div className="container flex flex-row justify-center overflow-x-auto">
+        {data.length > 0 && <BisectionGraph data={data} equation={Equation} />}
+      </div> */}
       <div className="max-w-lg mx-auto">
         {showTable && showTableComponent()}
       </div>

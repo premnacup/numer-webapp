@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { evaluate } from "mathjs";
 import MathEquation from "./components/MathEquation";
+import Graph from "./components/Graph";
 
 function Bisection() {
   const [Equation, setEquation] = useState("x^4 - 13");
-  const [xl, setXl] = useState(0);
-  const [xr, setXr] = useState(0);
+  const [xl, setXl] = useState(1);
+  const [xr, setXr] = useState(2);
   const [data, setData] = useState([]);
   const [answer, setAnswer] = useState("");
   const [showTable, setShowTable] = useState(false);
@@ -174,10 +175,12 @@ function Bisection() {
         </button>
         {answer}
       </div>
-      {/* <div className="container flex flex-row justify-center overflow-x-auto">
-        {data.length > 0 && <BisectionGraph data={data} equation={Equation} />}
-      </div> */}
       <div className="max-w-lg mx-auto">
+        <div className="container flex flex-row justify-center overflow-x-auto">
+          {data.length > 0 && (
+            <Graph method="bisection" data={data} equation={Equation} />
+          )}
+        </div>
         {showTable && showTableComponent()}
       </div>
     </div>

@@ -1,17 +1,26 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
 import "./index.css";
+import { createRoot } from "react-dom/client";
 import Navbar from "./components/Navbar.jsx";
 import App from "./App.jsx";
+import Graphical from "./Graphical.jsx";
 import Bisection from "./Bisection.jsx";
 import FalsePosition from "./FalsePosition.jsx";
-import { BrowserRouter } from "react-router-dom";
+import OnePoint from "./OnePoint.jsx";
+import NewtonRaphson from "./NewtonRaphson.jsx";
+import Secant from "./Secant.jsx";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
+  <Router>
     <Navbar />
-    {/* <App /> */}
-    {/* <Bisection /> */}
-    <FalsePosition />
-  </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<App />} />
+      <Route path="graphical" element={<Graphical />} />
+      <Route path="bisection" element={<Bisection />} />
+      <Route path="false-position" element={<FalsePosition />} />
+      <Route path="one-point" element={<OnePoint />} />
+      <Route path="newton-raphson" element={<NewtonRaphson />} />
+      <Route path="secant" element={<Secant />} />
+    </Routes>
+  </Router>
 );

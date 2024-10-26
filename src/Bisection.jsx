@@ -43,27 +43,11 @@ function Bisection() {
     setData(newData);
   };
 
-  const calculateRoot = () => {
-    if (xl >= xr) {
-      alert("XL must be less than XR.");
-      return;
-    }
-
-    const fxl = evaluate(Equation, { x: xl });
-    const fxr = evaluate(Equation, { x: xr });
-
-    if (fxl * fxr >= 0 && xl >= 0 && xr >= 0) {
-      alert("Can't find root. Please adjust XL and XR.");
-      return;
-    }
-
-    try {
-      CalculateBisection(xl, xr);
-      setShowTable(true);
-    } catch (error) {
-      alert("Error evaluating the equation: " + error.message);
-    }
-  };
+  const showAnswer = (xm) => (
+    <div className="text-center text-xl mt-10 mb-5">
+      Answer: {xm.toFixed(6)}
+    </div>
+  );
 
   const showTableComponent = () => {
     return (
@@ -121,11 +105,27 @@ function Bisection() {
     );
   };
 
-  const showAnswer = (xm) => (
-    <div className="text-center text-xl mt-10 mb-5">
-      Answer: {xm.toFixed(6)}
-    </div>
-  );
+  const calculateRoot = () => {
+    if (xl >= xr) {
+      alert("XL must be less than XR.");
+      return;
+    }
+
+    const fxl = evaluate(Equation, { x: xl });
+    const fxr = evaluate(Equation, { x: xr });
+
+    if (fxl * fxr >= 0 && xl >= 0 && xr >= 0) {
+      alert("Can't find root. Please adjust XL and XR.");
+      return;
+    }
+
+    try {
+      CalculateBisection(xl, xr);
+      setShowTable(true);
+    } catch (error) {
+      alert("Error evaluating the equation: " + error.message);
+    }
+  };
 
   return (
     <div className="text-center p-4">

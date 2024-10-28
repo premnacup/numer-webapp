@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MatrixInput from "./components/MatrixInput";
+import { det } from "mathjs";
 
 function Cramer() {
   const [answer, setAnswer] = useState("");
@@ -24,72 +25,33 @@ function Cramer() {
 
   const solveCramer = () => {
     try {
-      const numericMatrix = matrix.map((row) =>
-        row.map((val) => parseFloat(val))
-      );
-      const numericConstants = constants.map((val) => parseFloat(val));
+      const mat = matrix.map((row) => row.map((val) => parseFloat(val)));
+      const b = constants.map((val) => parseFloat(val));
 
-      const detA = calculateDeterminant(numericMatrix);
+      const detA = det(mat);
 
       if (detA === 0) {
-        setAnswer("System has no unique solution (determinant is 0)");
+        setAnswer("Determinant is zero. No solution found.");
         return;
       }
 
       const solution = new Array(n).fill(0);
 
       for (let i = 0; i < n; i++) {
-        const tempMatrix = numericMatrix.map((row) => [...row]);
+        const tempMatrix = mat.map((row) => [...row]);
 
         for (let j = 0; j < n; j++) {
-          tempMatrix[j][i] = numericConstants[j];
+          tempMatrix[j][i] = b[j];
         }
 
-        const detTemp = calculateDeterminant(tempMatrix);
-        solution[i] = Math.round(detTemp / detA);
+        const detTemp = det(tempMatrix);
+        solution[i] = detTemp / detA;
       }
 
       setAnswer(solution.map((val, idx) => `x${idx + 1} = ${val}`).join("\n"));
     } catch (error) {
       setAnswer("Error solving system: " + error.message);
     }
-  };
-
-  const calculateDeterminant = (matrix) => {
-    const n = matrix.length;
-
-    if (n === 2) {
-      return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-    }
-
-    let det = 0;
-    for (let i = 0; i < n; i++) {
-      det += matrix[0][i] * getCofactor(matrix, 0, i);
-    }
-    return det;
-  };
-
-  const getCofactor = (matrix, p, q) => {
-    const n = matrix.length;
-    const temp = Array(n - 1)
-      .fill()
-      .map(() => Array(n - 1).fill(0));
-    let i = 0,
-      j = 0;
-
-    for (let row = 0; row < n; row++) {
-      for (let col = 0; col < n; col++) {
-        if (row !== p && col !== q) {
-          temp[i][j++] = matrix[row][col];
-          if (j === n - 1) {
-            j = 0;
-            i++;
-          }
-        }
-      }
-    }
-
-    return Math.pow(-1, p + q) * calculateDeterminant(temp);
   };
   return (
     <div className="text-center p-4">

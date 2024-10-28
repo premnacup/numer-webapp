@@ -9,6 +9,8 @@ import OnePoint from "./OnePoint.jsx";
 import NewtonRaphson from "./NewtonRaphson.jsx";
 import Secant from "./Secant.jsx";
 import Cramer from "./Cramer.jsx";
+import GaussElimination from "./GaussElimination.jsx";
+import GaussJordan from "./GaussJordan.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
@@ -23,6 +25,8 @@ createRoot(document.getElementById("root")).render(
       <Route path="newton-raphson" element={<NewtonRaphson />} />
       <Route path="secant" element={<Secant />} />
       <Route path="cramer" element={<Cramer />} />
+      <Route path="gauss-elimination" element={<GaussElimination />} />
+      <Route path="gauss-jordan" element={<GaussJordan />} />
     </Routes>
   </Router>
 );

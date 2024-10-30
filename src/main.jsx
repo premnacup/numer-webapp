@@ -2,15 +2,18 @@ import "./index.css";
 import { createRoot } from "react-dom/client";
 import Navbar from "./components/Navbar.jsx";
 import App from "./App.jsx";
-import Graphical from "./Graphical.jsx";
-import Bisection from "./Bisection.jsx";
-import FalsePosition from "./FalsePosition.jsx";
-import OnePoint from "./OnePoint.jsx";
-import NewtonRaphson from "./NewtonRaphson.jsx";
-import Secant from "./Secant.jsx";
-import Cramer from "./Cramer.jsx";
-import GaussElimination from "./GaussElimination.jsx";
-import GaussJordan from "./GaussJordan.jsx";
+import Graphical from "./rootEquations/Graphical.jsx";
+import Bisection from "./rootEquations/Bisection.jsx";
+import FalsePosition from "./rootEquations/FalsePosition.jsx";
+import OnePoint from "./rootEquations/OnePoint.jsx";
+import NewtonRaphson from "./rootEquations/NewtonRaphson.jsx";
+import Secant from "./rootEquations/Secant.jsx";
+import Cramer from "./linear/Cramer.jsx";
+import GaussElimination from "./linear/GaussElimination.jsx";
+import GaussJordan from "./linear/GaussJordan.jsx";
+import NewtonInterpolation from "./interpolation/newtonDivided.jsx";
+import LagrangeInterpolation from "./interpolation/Lagrage.jsx";
+import LinearRegression from "./regression/LinearRegression.jsx";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
@@ -18,6 +21,7 @@ createRoot(document.getElementById("root")).render(
     <Navbar />
     <Routes>
       <Route path="/" element={<App />} />
+      <Route path="*" element={<App />} />
       <Route path="graphical" element={<Graphical />} />
       <Route path="bisection" element={<Bisection />} />
       <Route path="false-position" element={<FalsePosition />} />
@@ -27,6 +31,9 @@ createRoot(document.getElementById("root")).render(
       <Route path="cramer" element={<Cramer />} />
       <Route path="gauss-elimination" element={<GaussElimination />} />
       <Route path="gauss-jordan" element={<GaussJordan />} />
+      <Route path="newton-divided" element={<NewtonInterpolation />} />
+      <Route path="lagrange" element={<LagrangeInterpolation />} />
+      <Route path="linear-regression" element={<LinearRegression />} />
     </Routes>
   </Router>
 );

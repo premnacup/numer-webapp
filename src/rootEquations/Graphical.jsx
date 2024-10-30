@@ -1,56 +1,50 @@
 import { useState } from "react";
-import { evaluate, derivative } from "mathjs";
-import MathEquation from "./components/MathEquation";
-import Graph from "./components/Graph";
+import { evaluate } from "mathjs";
+import MathEquation from "../components/MathEquation";
+import Graph from "../components/Graph";
 
-function NewtonRaphson() {
-  const [Equation, setEquation] = useState("(x^2) - 7");
-  const [x, setX] = useState(1);
-  const [answer, setAnswer] = useState("");
+function Graphical() {
+  const [Equation, setEquation] = useState("x^4 - 13");
+  const [xStart, setxStart] = useState(1);
+  const [xEnd, setxEnd] = useState(4);
   const [data, setData] = useState([]);
+  const [answer, setAnswer] = useState("");
   const [showTable, setShowTable] = useState(false);
-  const tolerance = 1e-6;
 
-  const calculate = () => {
-    const newData = [];
+  const CalculateGraphical = (xs, xe) => {
+    let xStartNum = parseFloat(xs);
+    let xEndNum = parseFloat(xe);
+    let newData = [];
     let iter = 0;
-    let currentX = x;
-    let nextX;
-    let fx = evaluate(Equation, { x: currentX });
-    let dfx = derivative(Equation, "x").evaluate({ x: currentX });
+    let fxnum = evaluate(Equation, { x: xStartNum });
+    newData.push({ iteration: iter, x: xStartNum, fx: fxnum });
+    let ztemp = xStartNum;
+    let toleranceArray = [
+      1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11,
+      1e-12, 1e-13,
+    ];
+    let count = 0;
 
-    if (dfx === 0) {
-      setAnswer("Derrivative is zero. No solution found.");
-      return;
-    }
-    let error = Math.abs(currentX - fx / dfx);
-    newData.push({
-      iteration: iter,
-      x: currentX,
-      fx: fx,
-      dfx: dfx,
-      error: error,
-    });
-    iter++;
+    while (count < toleranceArray.length && ztemp < xEndNum) {
+      let temp = ztemp;
+      ztemp += toleranceArray[count];
+      fxnum = evaluate(Equation, { x: ztemp });
+      if (fxnum > 0 && ztemp > 0) {
+        ztemp = temp;
+        count++;
+        continue;
+      }
 
-    do {
-      nextX = currentX - fx / dfx;
-      fx = evaluate(Equation, { x: nextX });
-      dfx = derivative(Equation, "x").evaluate({ x: nextX });
-      error = Math.abs(nextX - currentX);
-      newData.push({
-        iteration: iter,
-        x: nextX,
-        fx: fx,
-        dfx: dfx,
-        error: error,
-      });
-      currentX = nextX;
       iter++;
-    } while (error > tolerance && iter < 100);
+      newData.push({ iteration: iter, x: ztemp, fx: fxnum });
+
+      if (count >= toleranceArray.length) {
+        break;
+      }
+    }
 
     setData(newData);
-    setAnswer(`Answer: ${nextX.toFixed(6)}`);
+    setAnswer(`Answer: ${ztemp.toFixed(6)}`);
     setShowTable(true);
   };
 
@@ -58,7 +52,7 @@ function NewtonRaphson() {
     return (
       <div className="overflow-x-auto mb-20 w-full">
         <h3 className="text-center text-xl mt-10 mb-5 font-bold">
-          Newton-Raphson Method Table
+          Graphical Method Table
         </h3>
         <table className="relative overflow-x-auto sm:rounded-lg w-full border border-custom-blue">
           <thead className="bg-custom-blue">
@@ -67,16 +61,10 @@ function NewtonRaphson() {
                 Iteration
               </th>
               <th className="text-center text-white border border-custom-blue">
-                X
+                x
               </th>
               <th className="text-center text-white border border-custom-blue">
-                f(X)
-              </th>
-              <th className="text-center text-white border border-custom-blue">
-                f'(X)
-              </th>
-              <th className="text-center text-white border border-custom-blue">
-                Error
+                f(x)
               </th>
             </tr>
           </thead>
@@ -96,12 +84,6 @@ function NewtonRaphson() {
                 <td className="border border-custom-blue">
                   {element.fx.toFixed(6)}
                 </td>
-                <td className="border border-custom-blue">
-                  {element.dfx.toFixed(6)}
-                </td>
-                <td className="border border-custom-blue">
-                  {element.error.toFixed(6)}
-                </td>
               </tr>
             ))}
           </tbody>
@@ -110,11 +92,25 @@ function NewtonRaphson() {
     );
   };
 
+  const calculate = () => {
+    let fxStart = evaluate(Equation, { x: xStart });
+    let fxEnd = evaluate(Equation, { x: xEnd });
+    if (xStart >= xEnd) {
+      alert("X-start must be less than X-end.");
+      return;
+    }
+    if (fxStart * fxEnd > 0 && xStart >= 0 && xEnd >= 0) {
+      alert("Can't find the answer.");
+      return;
+    }
+    CalculateGraphical(xStart, xEnd);
+  };
+
   return (
     <div className="text-center p-4">
-      <h1 className="text-3xl font-bold mb-4">Newton-Raphson Method</h1>
+      <h1 className="text-3xl font-bold mb-4">Graphical Method</h1>
       <div className="flex flex-col gap-4 max-w-lg mx-auto ">
-        <p className="text-lg">Input equation </p>
+        <p className="text-lg">Input equation</p>
         <input
           id="equation"
           type="text"
@@ -131,15 +127,24 @@ function NewtonRaphson() {
             <MathEquation equation={`$${"f(x)"}=$`} />
           )}
         </div>
-        <p className="text-lg">Input x</p>
+        <p className="text-lg">Input xStart and xEnd</p>
         <input
-          id="x"
+          id="xStart"
           type="number"
-          value={x}
-          onChange={(e) => setX(Number(e.target.value))}
+          value={xStart}
+          onChange={(e) => setxStart(Number(e.target.value))}
           onClick={(e) => e.target.select()}
           className="p-2 border-2 rounded-lg text-black"
-          placeholder="x"
+          placeholder="xStart"
+        />
+        <input
+          id="xEnd"
+          type="number"
+          value={xEnd}
+          onChange={(e) => setxEnd(Number(e.target.value))}
+          onClick={(e) => e.target.select()}
+          className="p-2 border-2 rounded-lg text-black"
+          placeholder="xEnd"
         />
         <button
           className="p-2 bg-custom-orange text-white rounded-lg"
@@ -147,14 +152,12 @@ function NewtonRaphson() {
         >
           Calculate
         </button>
-        {answer && (
-          <div className="text-center text-xl mt-10 mb-5">{answer}</div>
-        )}
+        <div className="text-center text-xl mt-10 mb-5">{answer}</div>
       </div>
       <div className="max-w-lg mx-auto">
         <div className="container flex flex-row justify-center overflow-x-auto">
           {data.length > 0 && (
-            <Graph method="newton" data={data} equation={Equation} />
+            <Graph method="graphical" data={data} equation={Equation} />
           )}
         </div>
         {showTable && showTableComponent()}
@@ -163,4 +166,4 @@ function NewtonRaphson() {
   );
 }
 
-export default NewtonRaphson;
+export default Graphical;

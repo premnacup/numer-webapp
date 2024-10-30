@@ -1,5 +1,5 @@
 import { useState } from "react";
-import MatrixInput from "./components/MatrixInput";
+import MatrixInput from "../components/MatrixInput";
 import { det } from "mathjs";
 
 function Cramer() {

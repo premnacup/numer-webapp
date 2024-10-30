@@ -1,59 +1,76 @@
 import { useState } from "react";
 import { evaluate } from "mathjs";
-import MathEquation from "./components/MathEquation";
-import Graph from "./components/Graph";
+import MathEquation from "../components/MathEquation";
+import Graph from "../components/Graph";
 
-function Secant() {
-  const [Equation, setEquation] = useState("(x^2) - 7");
-  const [x0, setX0] = useState(0);
-  const [x1, setX1] = useState(1);
-  const [answer, setAnswer] = useState("");
+function FalsePosition() {
+  const [Equation, setEquation] = useState("x^4 - 13");
+  const [xl, setXl] = useState(1);
+  const [xr, setXr] = useState(2);
   const [data, setData] = useState([]);
+  const [answer, setAnswer] = useState("");
   const [showTable, setShowTable] = useState(false);
   const tolerance = 1e-6;
 
-  const calculate = () => {
-    const newData = [];
+  const CalculateFalsePosition = (xl, xr) => {
+    let fxrnum = evaluate(Equation, { x: xr });
+    let currentError;
+    let newData = [];
     let iter = 0;
-    let currentX0 = x0;
-    let currentX1 = x1;
-    let nextX = x1;
-    let error = Math.abs(nextX - currentX0);
-
+    let fxl = evaluate(Equation, { x: xl });
+    let fxr = evaluate(Equation, { x: xr });
+    let xm, fxm;
     do {
-      const fx0 = evaluate(Equation, { x: currentX0 });
-      const fx1 = evaluate(Equation, { x: currentX1 });
-
-      if (fx1 === fx0) {
-        setAnswer("Division by zero. No solution found.");
-        return;
-      }
-
-      nextX = currentX1 - (fx1 * (currentX1 - currentX0)) / (fx1 - fx0);
-      error = Math.abs(nextX - currentX1);
-
+      xm = (xl * fxr - xr * fxl) / (fxr - fxl);
+      fxm = evaluate(Equation, { x: xm });
+      currentError = Math.abs(xr - xl);
       newData.push({
         iteration: iter,
-        x: nextX,
-        fx: evaluate(Equation, { x: nextX }),
-        error: error,
+        Xl: xl,
+        Xm: xm,
+        Xr: xr,
+        error: currentError,
+        fxm: fxm,
       });
-
-      currentX0 = currentX1;
-      currentX1 = nextX;
+      if (fxm === 0.0) {
+        break;
+      } else if (fxm * fxrnum > 0) {
+        xr = xm;
+      } else {
+        xl = xm;
+      }
       iter++;
-    } while (error > tolerance && iter < 100);
-
+    } while (Math.abs(fxm) >= tolerance);
+    setAnswer(showAnswer(xm));
     setData(newData);
-    setAnswer(`Answer: ${nextX.toFixed(6)}`);
-    setShowTable(true);
   };
 
+  const calculateRoot = () => {
+    if (xl >= xr) {
+      alert("XL must be less than XR.");
+      return;
+    }
+
+    const fxl = evaluate(Equation, { x: xl });
+    const fxr = evaluate(Equation, { x: xr });
+
+    if (fxl * fxr >= 0) {
+      alert("Can't find root. Please adjust XL and XR.");
+      return;
+    }
+
+    try {
+      CalculateFalsePosition(xl, xr);
+      setShowTable(true);
+    } catch (error) {
+      alert("Error evaluating the equation: " + error.message);
+    }
+  };
   const showTableComponent = () => {
     return (
       <div className="overflow-x-auto mb-20 w-full">
         <h3 className="text-center text-xl mt-10 mb-5 font-bold">
-          Secant Method Table
+          False Position Method Table
         </h3>
         <table className="relative overflow-x-auto sm:rounded-lg w-full border border-custom-blue">
           <thead className="bg-custom-blue">
@@ -62,10 +79,13 @@ function Secant() {
                 Iteration
               </th>
               <th className="text-center text-white border border-custom-blue">
-                X
+                XL
               </th>
               <th className="text-center text-white border border-custom-blue">
-                f(X)
+                XM
+              </th>
+              <th className="text-center text-white border border-custom-blue">
+                XR
               </th>
               <th className="text-center text-white border border-custom-blue">
                 Error
@@ -83,13 +103,16 @@ function Secant() {
                   {element.iteration + 1}
                 </td>
                 <td className="border border-custom-blue">
-                  {element.x.toFixed(6)}
+                  {element.Xl.toFixed(6)}
                 </td>
                 <td className="border border-custom-blue">
-                  {element.fx.toFixed(6)}
+                  {element.Xm.toFixed(6)}
                 </td>
                 <td className="border border-custom-blue">
-                  {element.error !== null ? element.error.toFixed(6) : "N/A"}
+                  {element.Xr.toFixed(6)}
+                </td>
+                <td className="border border-custom-blue">
+                  {element.error.toFixed(6)}
                 </td>
               </tr>
             ))}
@@ -99,9 +122,15 @@ function Secant() {
     );
   };
 
+  const showAnswer = (xm) => (
+    <div className="text-center text-xl mt-10 mb-5">
+      Answer: {xm.toFixed(6)}
+    </div>
+  );
+
   return (
     <div className="text-center p-4">
-      <h1 className="text-3xl font-bold mb-4">Secant Method</h1>
+      <h1 className="text-3xl font-bold mb-4">False Position Method</h1>
       <div className="flex flex-col gap-4 max-w-lg mx-auto ">
         <p className="text-lg">Input equation</p>
         <input
@@ -120,39 +149,37 @@ function Secant() {
             <MathEquation equation={`$${"f(x)"}=$`} />
           )}
         </div>
-        <p className="text-lg">Input x0 and x1</p>
+        <p className="text-lg">Input XL and XR</p>
         <input
-          id="x0"
+          id="xl"
           type="number"
-          value={x0}
-          onChange={(e) => setX0(Number(e.target.value))}
+          value={xl}
+          onChange={(e) => setXl(Number(e.target.value))}
           onClick={(e) => e.target.select()}
           className="p-2 border-2 rounded-lg text-black"
-          placeholder="x0"
+          placeholder="XL"
         />
         <input
-          id="x1"
+          id="xr"
           type="number"
-          value={x1}
-          onChange={(e) => setX1(Number(e.target.value))}
+          value={xr}
+          onChange={(e) => setXr(Number(e.target.value))}
           onClick={(e) => e.target.select()}
           className="p-2 border-2 rounded-lg text-black"
-          placeholder="x1"
+          placeholder="XR"
         />
         <button
           className="p-2 bg-custom-orange text-white rounded-lg"
-          onClick={calculate}
+          onClick={calculateRoot}
         >
           Calculate
         </button>
-        {answer && (
-          <div className="text-center text-xl mt-10 mb-5">{answer}</div>
-        )}
+        {answer}
       </div>
       <div className="max-w-lg mx-auto">
         <div className="container flex flex-row justify-center overflow-x-auto">
           {data.length > 0 && (
-            <Graph method="secant" data={data} equation={Equation} />
+            <Graph method="false-position" data={data} equation={Equation} />
           )}
         </div>
         {showTable && showTableComponent()}
@@ -161,4 +188,4 @@ function Secant() {
   );
 }
 
-export default Secant;
+export default FalsePosition;

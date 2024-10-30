@@ -1,8 +1,7 @@
 import { useState } from "react";
-import MatrixInput from "./components/MatrixInput";
-import { row } from "mathjs";
+import MatrixInput from "../components/MatrixInput";
 
-function GaussElimination() {
+function GaussJordan() {
   const [answer, setAnswer] = useState("");
   const [n, setN] = useState(2);
   const [matrix, setMatrix] = useState(null);
@@ -23,51 +22,72 @@ function GaussElimination() {
     setResetTrigger((prev) => prev + 1);
   };
 
-  const solveGaussElimination = () => {
+  const solveGaussJordan = () => {
     try {
       const mat = matrix.map((row, i) => [...row, constants[i]]);
       const n = mat.length;
       const m = mat[0].length;
+
       // Forward elimination
       for (let current = 0; current < n; current++) {
         const pivot = mat[current][current];
+
         // Add check for zero pivot
         if (pivot === 0) {
           throw new Error("Zero found in diagonal - cannot solve");
         }
+
         // First normalization
         for (let j = 0; j < m; j++) {
           mat[current][j] /= pivot;
         }
-        // Eliminate below
-        for (let i = current + 1; i < n; i++) {
-          const temp = mat[i][current];
-          for (let j = 0; j < m; j++) {
-            mat[i][j] -= temp * mat[current][j];
+
+        // Eliminate below and above
+        for (let i = 0; i < n; i++) {
+          if (i !== current) {
+            const temp = mat[i][current];
+            for (let j = 0; j < m; j++) {
+              mat[i][j] -= temp * mat[current][j];
+            }
           }
         }
       }
 
-      const solution = new Array(n).fill(0);
-      // Back substitution for the solution vector
-      for (let i = n - 1; i >= 0; i--) {
-        let sum = mat[i][m - 1];
-        for (let j = i + 1; j < n; j++) {
-          sum -= mat[i][j] * solution[j];
+      // Back substitution (though not strictly needed for Gauss-Jordan)
+      for (let current = n - 1; current >= 0; current--) {
+        const pivot = mat[current][current];
+
+        // Add check for zero pivot
+        if (pivot === 0) {
+          throw new Error("Zero found in diagonal - cannot solve");
         }
-        solution[i] = sum / mat[i][i];
+
+        // Second normalization
+        for (let j = 0; j < m; j++) {
+          mat[current][j] /= pivot;
+        }
+
+        // Eliminate above
+        for (let i = current - 1; i >= 0; i--) {
+          if (i !== current) {
+            const temp = mat[i][current];
+            for (let j = 0; j < m; j++) {
+              mat[i][j] -= temp * mat[current][j];
+            }
+          }
+        }
       }
 
-      console.log(mat);
-      console.log(solution);
+      const solution = mat.map((row) => row[row.length - 1]);
       setAnswer(solution.map((val, idx) => `x${idx + 1} = ${val}`).join("\n"));
     } catch (error) {
       setAnswer("Error solving system: " + error.message);
     }
   };
+
   return (
     <div className="text-center p-4">
-      <h1 className="text-3xl font-bold mb-4">Gauss Elimination</h1>
+      <h1 className="text-3xl font-bold mb-4">Gauss-Jordan Elimination</h1>
       <div className="flex flex-col gap-4 max-w-lg mx-auto">
         <label className="text-white flex items-center text-left w-full">
           <span className="w-1/4">Matrix Size:</span>
@@ -89,7 +109,7 @@ function GaussElimination() {
           Reset
         </button>
         <MatrixInput
-          method="Gauss-Elimination"
+          method="Gauss-Jordan"
           rows={n}
           cols={n}
           onMatrixChange={handleMatrixData}
@@ -97,7 +117,7 @@ function GaussElimination() {
         />
         {matrix && constants && (
           <button
-            onClick={solveGaussElimination}
+            onClick={solveGaussJordan}
             className="mx-auto px-4 py-2 w-1/2 text-center bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             Solve
@@ -114,4 +134,4 @@ function GaussElimination() {
   );
 }
 
-export default GaussElimination;
+export default GaussJordan;

@@ -1,59 +1,56 @@
 import { useState } from "react";
-import { evaluate } from "mathjs";
-import MathEquation from "./components/MathEquation";
-import Graph from "./components/Graph";
+import { cumsum, evaluate } from "mathjs";
+import MathEquation from "../components/MathEquation";
+import Graph from "../components/Graph";
 
-function Bisection() {
-  const [Equation, setEquation] = useState("x^4 - 13");
-  const [xl, setXl] = useState(1);
-  const [xr, setXr] = useState(2);
-  const [data, setData] = useState([]);
+function OnePoint() {
+  const [Equation, setEquation] = useState("(1 / 2) * (x + 7 / x)");
+  const [x, setX] = useState(1);
   const [answer, setAnswer] = useState("");
+  const [data, setData] = useState([]);
   const [showTable, setShowTable] = useState(false);
   const tolerance = 1e-6;
 
-  const CalculateBisection = (xl, xr) => {
-    let fxrnum = evaluate(Equation, { x: xr });
-    let currentError;
-    let newData = [];
+  const calculate = () => {
+    const newData = [];
     let iter = 0;
-    let xm, fxm;
+    let currentX = x;
+    let nextX = evaluate(Equation, { x: currentX });
+    let error;
+
+    newData.push({
+      iteration: iter,
+      x: currentX,
+      fx: evaluate(Equation, { x: currentX }),
+      error: Math.abs(nextX - currentX),
+    });
+    iter++;
     do {
-      xm = (xl + xr) / 2;
-      fxm = evaluate(Equation, { x: xm });
-      currentError = Math.abs(xr - xl);
+      nextX = evaluate(Equation, { x: currentX });
+
+      error = Math.abs(nextX - currentX);
+
       newData.push({
         iteration: iter,
-        Xl: xl,
-        Xm: xm,
-        Xr: xr,
-        error: currentError,
-        fxm: fxm,
+        x: nextX,
+        fx: evaluate(Equation, { x: nextX }),
+        error,
       });
-      if (fxm === 0.0) {
-        break;
-      } else if (fxm * fxrnum > 0) {
-        xr = xm;
-      } else {
-        xl = xm;
-      }
-      iter++;
-    } while (Math.abs(fxm) >= tolerance);
-    setAnswer(showAnswer(xm));
-    setData(newData);
-  };
 
-  const showAnswer = (xm) => (
-    <div className="text-center text-xl mt-10 mb-5">
-      Answer: {xm.toFixed(6)}
-    </div>
-  );
+      currentX = nextX;
+      iter++;
+    } while (error > tolerance && iter < 100);
+
+    setData(newData);
+    setAnswer(`Answer : ${nextX.toFixed(6)}`);
+    setShowTable(true);
+  };
 
   const showTableComponent = () => {
     return (
       <div className="overflow-x-auto mb-20 w-full">
         <h3 className="text-center text-xl mt-10 mb-5 font-bold">
-          Bisection Method Table
+          One Point Iteration Method Table
         </h3>
         <table className="relative overflow-x-auto sm:rounded-lg w-full border border-custom-blue">
           <thead className="bg-custom-blue">
@@ -62,13 +59,10 @@ function Bisection() {
                 Iteration
               </th>
               <th className="text-center text-white border border-custom-blue">
-                XL
+                X
               </th>
               <th className="text-center text-white border border-custom-blue">
-                XM
-              </th>
-              <th className="text-center text-white border border-custom-blue">
-                XR
+                f(X)
               </th>
               <th className="text-center text-white border border-custom-blue">
                 Error
@@ -86,13 +80,10 @@ function Bisection() {
                   {element.iteration + 1}
                 </td>
                 <td className="border border-custom-blue">
-                  {element.Xl.toFixed(6)}
+                  {element.x.toFixed(6)}
                 </td>
                 <td className="border border-custom-blue">
-                  {element.Xm.toFixed(6)}
-                </td>
-                <td className="border border-custom-blue">
-                  {element.Xr.toFixed(6)}
+                  {element.fx.toFixed(6)}
                 </td>
                 <td className="border border-custom-blue">
                   {element.error.toFixed(6)}
@@ -105,80 +96,51 @@ function Bisection() {
     );
   };
 
-  const calculateRoot = () => {
-    if (xl >= xr) {
-      alert("XL must be less than XR.");
-      return;
-    }
-
-    const fxl = evaluate(Equation, { x: xl });
-    const fxr = evaluate(Equation, { x: xr });
-
-    if (fxl * fxr >= 0 && xl >= 0 && xr >= 0) {
-      alert("Can't find root. Please adjust XL and XR.");
-      return;
-    }
-
-    try {
-      CalculateBisection(xl, xr);
-      setShowTable(true);
-    } catch (error) {
-      alert("Error evaluating the equation: " + error.message);
-    }
-  };
-
   return (
     <div className="text-center p-4">
-      <h1 className="text-3xl font-bold mb-4">Bisection Method</h1>
+      <h1 className="text-3xl font-bold mb-4">One Point Iteration Method</h1>
       <div className="flex flex-col gap-4 max-w-lg mx-auto ">
-        <p className="text-lg">Input equation</p>
+        <p className="text-lg">Input equation (g(x) = f(x))</p>
         <input
           id="equation"
           type="text"
           value={Equation}
           onChange={(e) => setEquation(e.target.value)}
           className="flex-1 p-2 border-2 rounded-lg text-black"
-          placeholder="f(x)"
+          placeholder="g(x)"
         />
         <div className="flex">
           Equation :{" "}
           {Equation ? (
-            <MathEquation equation={`$${"f(x)"}=$ $${Equation}$`} />
+            <MathEquation equation={`$${"g(x)"}=$ $${Equation}$`} />
           ) : (
-            <MathEquation equation={`$${"f(x)"}=$`} />
+            <MathEquation equation={`$${"g(x)"}=$`} />
           )}
         </div>
-        <p className="text-lg">Input XL and XR</p>
+        <p className="text-lg">Input x</p>
         <input
-          id="xl"
+          id="x"
           type="number"
-          value={xl}
-          onChange={(e) => setXl(Number(e.target.value))}
+          value={x}
+          onChange={(e) => setX(Number(e.target.value))}
           onClick={(e) => e.target.select()}
           className="p-2 border-2 rounded-lg text-black"
-          placeholder="XL"
-        />
-        <input
-          id="xr"
-          type="number"
-          value={xr}
-          onChange={(e) => setXr(Number(e.target.value))}
-          onClick={(e) => e.target.select()}
-          className="p-2 border-2 rounded-lg text-black"
-          placeholder="XR"
+          placeholder="x"
         />
         <button
           className="p-2 bg-custom-orange text-white rounded-lg"
-          onClick={calculateRoot}
+          onClick={calculate}
         >
           Calculate
         </button>
-        {answer}
+        {answer && (
+          <div className="text-center text-xl mt-10 mb-5">{answer}</div>
+        )}
       </div>
       <div className="max-w-lg mx-auto">
         <div className="container flex flex-row justify-center overflow-x-auto">
           {data.length > 0 && (
-            <Graph method="bisection" data={data} equation={Equation} />
+            <Graph method="one-point" data={data} equation={Equation} />
           )}
         </div>
         {showTable && showTableComponent()}
@@ -187,4 +149,4 @@ function Bisection() {
   );
 }
 
-export default Bisection;
+export default OnePoint;

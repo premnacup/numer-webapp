@@ -50,3 +50,4 @@ This application includes the following methods:
 
 - **ReactJS** - A JavaScript library for building user interfaces
 - **Vite** - A modern build tool that serves as the development server and bundler for the app
+- **MongoDB** - A NoSQL database for storing data in flexible, JSON-like documents

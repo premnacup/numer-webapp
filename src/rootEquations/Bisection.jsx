@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { evaluate } from "mathjs";
 import MathEquation from "../components/MathEquation";
 import Graph from "../components/Graph";
+import axios from "axios";
 
 function Bisection() {
   const [Equation, setEquation] = useState("x^4 - 13");
@@ -11,6 +12,35 @@ function Bisection() {
   const [answer, setAnswer] = useState("");
   const [showTable, setShowTable] = useState(false);
   const tolerance = 1e-6;
+  const API_URL = "YOUR_API_KEY";
+
+  useEffect(() => {
+    const fetchBisections = async () => {
+      try {
+        const response = await axios.get(API_URL); // Update to your API endpoint
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchBisections();
+  }, []);
+
+  const showAnswer = (xm) => (
+    <div className="text-center text-xl mt-10 mb-5">
+      Answer: {xm.toFixed(6)}
+    </div>
+  );
+
+  const saveBisectionRecord = async (record) => {
+    try {
+      const response = await axios.post(API_URL, record); // Update to your API endpoint
+      setData((prevData) => [...prevData, response.data]); // Add new record to state
+    } catch (error) {
+      console.error("Error saving record:", error);
+    }
+  };
 
   const CalculateBisection = (xl, xr) => {
     let fxrnum = evaluate(Equation, { x: xr });
@@ -18,6 +48,7 @@ function Bisection() {
     let newData = [];
     let iter = 0;
     let xm, fxm;
+
     do {
       xm = (xl + xr) / 2;
       fxm = evaluate(Equation, { x: xm });
@@ -39,15 +70,11 @@ function Bisection() {
       }
       iter++;
     } while (Math.abs(fxm) >= tolerance);
+
     setAnswer(showAnswer(xm));
     setData(newData);
+    saveBisectionRecord({ equation: Equation, xl, xr, answer: xm.toFixed(6) }); // Save record after calculation
   };
-
-  const showAnswer = (xm) => (
-    <div className="text-center text-xl mt-10 mb-5">
-      Answer: {xm.toFixed(6)}
-    </div>
-  );
 
   const showTableComponent = () => {
     return (

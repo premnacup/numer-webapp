@@ -11,7 +11,12 @@
   },
   "dependencies": {
     "better-react-mathjax": "^2.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
     "mathjs": "^13.1.1",
+    "mongodb": "6.10",
+    "mongoose": "^8.8.0",
     "plotly.js": "^2.35.2",
     "plotly.js-dist": "^2.35.2",
     "react": "^18.3.1",
@@ -33,5 +38,10 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
     "vite": "^5.4.1"
-  }
+  },
+  "description": "A web application that provides a suite of tools to perform calculations related to various numerical methods. Built with ReactJS and Vite, this app allows users to solve problems in numerical methods, including root finding, linear algebra, interpolation, regression, integration, and differentiation.",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

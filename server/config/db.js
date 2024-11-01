@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-require("dotenv").config(); // Only needed for local development
+require("dotenv").config();
 
 const connectDB = async () => {
   try {

@@ -7,4 +7,4 @@ const bisectionSchema = new mongoose.Schema({
   answer: { type: Number, required: true },
 });
 
-module.exports = mongoose.model("Bisection", bisectionSchema);
+module.exports = mongoose.model("bisections", bisectionSchema);

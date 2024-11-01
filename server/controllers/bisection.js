@@ -1,9 +1,16 @@
 const Bisection = require("../models/bisectionModel");
+const Test = require("../models/testModel");
 
 exports.getAll = async (req, res) => {
+  // try {
+  //   const bisection = await Bisection.find();
+  //   res.send(bisection);
+  // } catch (error) {
+  //   console.log(error);
+  // }
   try {
-    const bisection = await Bisection.find();
-    res.send(bisection);
+    const test = await test.find();
+    res.send(test);
   } catch (error) {
     console.log(error);
   }

@@ -1,5 +1,4 @@
 const Bisection = require("../models/bisectionModel");
-// const Test = require("../models/testModel");
 
 exports.getAll = async (req, res) => {
   try {

@@ -10,7 +10,7 @@ function Navbar() {
       </div>
       <div className="flex items-center">
         <Link to="/" className="ml-2 hover:underline">
-          Login
+          History
         </Link>
       </div>
     </nav>

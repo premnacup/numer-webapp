@@ -1,4 +1,4 @@
-# Numerical Method Webapp
+# Numerical Method App
 
 A web application that provides a suite of tools to perform calculations related to various numerical methods. Built with ReactJS and Vite, this app allows users to solve problems in numerical methods, including root finding, linear algebra, interpolation, regression, integration, and differentiation.
 

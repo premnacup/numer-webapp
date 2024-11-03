@@ -9,7 +9,7 @@ function Navbar() {
         </Link>
       </div>
       <div className="flex items-center">
-        <Link to="/" className="ml-2 hover:underline">
+        <Link to="/history" className="ml-2 hover:underline">
           History
         </Link>
       </div>

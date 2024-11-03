@@ -11,14 +11,38 @@ function Bisection() {
   const [data, setData] = useState([]);
   const [answer, setAnswer] = useState("");
   const [showTable, setShowTable] = useState(false);
+  const [fetchedData, setFetchedData] = useState([]);
   const tolerance = 1e-6;
-  const API_URL = "YOUR_API_KEY";
+  const API_URL = "https://numer-webapp-server.vercel.app/api";
 
-  const showAnswer = (xm) => (
-    <div className="text-center text-xl mt-10 mb-5">
-      Answer: {xm.toFixed(6)}
-    </div>
-  );
+  const saveData = async (data) => {
+    try {
+      const newData = {
+        equation: Equation,
+        xl: Number(xl),
+        xr: Number(xr),
+        answer: Number(data),
+      };
+      const response = await axios.post(`${API_URL}/bisection`, newData);
+      console.log("Data saved successfully:", response.data);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/bisection`);
+      setFetchedData(response.data);
+
+      const latestData = response.data[response.data.length - 1];
+      setEquation(latestData.equation);
+      setXl(latestData.xl);
+      setXr(latestData.xr);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const CalculateBisection = (xl, xr) => {
     let fxrnum = evaluate(Equation, { x: xr });
@@ -49,10 +73,17 @@ function Bisection() {
       iter++;
     } while (Math.abs(fxm) >= tolerance);
 
+    const answerXM = xm.toFixed(6);
+
     setAnswer(showAnswer(xm));
     setData(newData);
-    // saveBisectionRecord({ equation: Equation, xl, xr, answer: xm.toFixed(6) }); // Save record after calculation
+    saveData(answerXM);
   };
+  const showAnswer = (xm) => (
+    <div className="text-center text-xl mt-10 mb-5">
+      Answer: {xm.toFixed(6)}
+    </div>
+  );
 
   const showTableComponent = () => {
     return (
@@ -177,6 +208,12 @@ function Bisection() {
           onClick={calculateRoot}
         >
           Calculate
+        </button>
+        <button
+          className="p-2 bg-custom-orange text-white rounded-lg"
+          onClick={fetchData}
+        >
+          Get Latest
         </button>
         {answer}
       </div>

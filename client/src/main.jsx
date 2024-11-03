@@ -2,6 +2,7 @@ import "./index.css";
 import { createRoot } from "react-dom/client";
 import Navbar from "./components/Navbar.jsx";
 import App from "./App.jsx";
+import History from "./components/History.jsx";
 import Graphical from "./rootEquations/Graphical.jsx";
 import Bisection from "./rootEquations/Bisection.jsx";
 import FalsePosition from "./rootEquations/FalsePosition.jsx";
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")).render(
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="*" element={<App />} />
+      <Route path="history" element={<History />} />
       <Route path="graphical" element={<Graphical />} />
       <Route path="bisection" element={<Bisection />} />
       <Route path="false-position" element={<FalsePosition />} />

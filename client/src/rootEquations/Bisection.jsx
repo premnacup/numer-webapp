@@ -14,33 +14,11 @@ function Bisection() {
   const tolerance = 1e-6;
   const API_URL = "YOUR_API_KEY";
 
-  // useEffect(() => {
-  //   const fetchBisections = async () => {
-  //     try {
-  //       const response = await axios.get(API_URL); // Update to your API endpoint
-  //       setData(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchBisections();
-  // }, []);
-
   const showAnswer = (xm) => (
     <div className="text-center text-xl mt-10 mb-5">
       Answer: {xm.toFixed(6)}
     </div>
   );
-
-  // const saveBisectionRecord = async (record) => {
-  //   try {
-  //     const response = await axios.post(API_URL, record); // Update to your API endpoint
-  //     setData((prevData) => [...prevData, response.data]); // Add new record to state
-  //   } catch (error) {
-  //     console.error("Error saving record:", error);
-  //   }
-  // };
 
   const CalculateBisection = (xl, xr) => {
     let fxrnum = evaluate(Equation, { x: xr });
